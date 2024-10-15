@@ -1,0 +1,20 @@
+{
+    "categories": {
+        "project_1": {
+            "name": "Project 1",
+            "color": "bg-purple-500",
+            "link": "link_to_project_1"
+        },
+        "project_2": {
+            "name": "Project 2",
+            "color": "bg-blue-500",
+            "link": "link_to_project_2"
+        }
+    },
+    "revenue": [
+        { "value": 2000, "category": "project_1", "date": "2024-10-14" },
+        { "value": 3000, "category": "project_2", "date": "2024-10-15" },
+        { "value": 1000, "category": "project_1", "date": "2024-10-16" },
+        { "value": 2000, "category": "project_2", "date": "2024-10-17" }
+    ]
+}
