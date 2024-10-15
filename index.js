@@ -3,20 +3,13 @@ const revenueBreakdown = document.getElementById("revenue-breakdown");
 
 fetch("./_data.json")
     .then((response) => response.json())
-    .then((jsonData) => {
-        const { categories, revenue } = jsonData;
-
-        console.log(jsonData);
-
-        const currentRevenue = revenue;
-        const mappedData = currentRevenue.map((item) => ({
+    .then(({ categories, revenue }) => {
+        const mappedData = revenue.map((item) => ({
             ...item,
             category: categories[item.category],
         }));
 
-        const formattedData = Object.values(
-            formatValues(JSON.parse(JSON.stringify(mappedData)))
-        );
+        const formattedData = formatValues(mappedData);
 
         const consolidatedData = mappedData
             .reduce((acc, item) => {
@@ -89,51 +82,47 @@ function formatValues(array) {
 function generateMillionDollarGrid(data) {
     const totalSquares = 1000;
     const squaresData = new Array(totalSquares).fill(null);
-
-    let currentIndex = 0;
-    data.forEach((item) => {
-        const squaresCount = Math.floor(item.value / 1000);
-        for (let i = 0; i < squaresCount; i++) {
-            if (currentIndex < totalSquares) {
-                squaresData[currentIndex] = item.category;
-                currentIndex++;
-            }
-        }
-    });
-
-    // Create a mapping of category names to colors
     const categoryColors = Object.fromEntries(
         data.map((item) => [item.category.name, item.category.color])
     );
 
+    let currentIndex = 0;
+    data.forEach((item) => {
+        const squaresCount = Math.floor(item.value / 1000);
+        for (let i = 0; i < squaresCount && currentIndex < totalSquares; i++) {
+            squaresData[currentIndex] = item.category;
+            currentIndex++;
+        }
+    });
+
     const innerHTML = squaresData
         .map(
-            (category, index) =>
-                `<div class="w-3 h-3 relative">
-            <a
-                href="${category ? category.link : "/one-million/sponsor"}"
-                target="_blank"
-                class="block w-full h-full md:border md:dark:border-gray-800 relative group ${
-                    category
-                        ? categoryColors[category.name]
-                        : "bg-gray-300 dark:bg-gray-800"
-                } ${category ? "animate-scale-in" : ""}"
-                style="animation-delay: ${
-                    category ? `${index * 10}ms` : "0ms"
-                };"
-            >
-                ${
-                    category
-                        ? `
-                    <div class="opacity-0 group-hover:opacity-100 scale-0 group-hover:scale-100 transition duration-200 absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-700 rounded-md pointer-events-none whitespace-nowrap">
-                        <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-2 h-2 bg-gray-700 rotate-45"></div>
-                        ${category.name}
-                    </div>
-                `
-                        : ""
-                }
-            </a>
-        </div>`
+            (category, index) => `
+            <div class="w-3 h-3 relative">
+                <a
+                    href="${category ? category.link : "#"}"
+                    target="${category ? "_blank" : ""}"
+                    class="block w-full h-full md:border md:dark:border-gray-800 relative group ${
+                        category
+                            ? categoryColors[category.name]
+                            : "bg-gray-300 dark:bg-gray-800"
+                    } ${category ? "animate-scale-in" : ""}"
+                    style="animation-delay: ${
+                        category ? `${index * 10}ms` : "0ms"
+                    };"
+                >
+                    ${
+                        category
+                            ? `
+                        <div class="opacity-0 group-hover:opacity-100 scale-0 group-hover:scale-100 transition duration-200 absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-700 rounded-md pointer-events-none whitespace-nowrap">
+                            <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-2 h-2 bg-gray-700 rotate-45"></div>
+                            ${category.name}
+                        </div>
+                    `
+                            : ""
+                    }
+                </a>
+            </div>`
         )
         .join("");
 
